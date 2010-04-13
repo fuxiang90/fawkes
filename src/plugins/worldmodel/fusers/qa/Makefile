@@ -1,8 +1,8 @@
 #*****************************************************************************
-#                  Makefile Build System for Fawkes: Plugins
+#              Makefile Build System for Fawkes : Majority Fuser QA
 #                            -------------------
-#   Created on Mon Dec 04 14:54:17 2006
-#   Copyright (C) 2006-2008 by Tim Niemueller, AllemaniACs RoboCup Team
+#   Created on Thu Oct 05 14:14:14 2006
+#   copyright (C) 2006 by Tim Niemueller, AllemaniACs RoboCup Team
 #
 #*****************************************************************************
 #
@@ -13,17 +13,17 @@
 #
 #*****************************************************************************
 
-BASEDIR = ../..
+BASEDIR = ../../../../..
 include $(BASEDIR)/etc/buildsys/config.mk
 
-# base + hardware drivers + functional + integration
-SUBDIRS	= bbsync bblogger webview ttmainloop \
-	  laser flite joystick katana pantilt \
-	  skiller luaagent worldmodel laserht \
-	  refboxcomm player xmlrpc
-	  #festival readylogagent
+CFLAGS = -g
 
-include $(BUILDSYSDIR)/rules.mk
+LIBS_qa_objpos_majority = ObjectPositionInterface fawkesblackboard
+OBJS_qa_objpos_majority = qa_objpos_majority.o
 
-luaagent: skiller
+OBJS_all =	$(OBJS_qa_objpos_majority)
+
+BINS_all =	$(BINDIR)/qa_objpos_majority
+
+include $(BUILDSYSDIR)/base.mk
 

@@ -34,7 +34,10 @@
 
 namespace fawkes {
   class GameStateInterface;
+  class SwitchInterface;
+#ifdef HAVE_SPL
   class SplPenaltyInterface;
+#endif
 }
 
 class RefBoxProcessor;
@@ -73,7 +76,9 @@ class RefBoxCommThread
 
  private: /* members */
   fawkes::GameStateInterface   *__gamestate_if;
+#ifdef HAVE_SPL
   fawkes::SplPenaltyInterface  *__penalty_if;
+#endif
   RefBoxProcessor              *__refboxproc;
 
   bool         __gamestate_modified;
@@ -86,6 +91,11 @@ class RefBoxCommThread
   fawkes::worldinfo_gamestate_goalcolor_t __our_goal_color;
   unsigned int __team_number;
   unsigned int __player_number;
+
+  bool __cfg_beep_on_change;
+  float __cfg_beep_frequency;
+  float __cfg_beep_duration;
+  fawkes::SwitchInterface *__beep_if;
 };
 
 

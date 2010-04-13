@@ -1,8 +1,8 @@
 #*****************************************************************************
-#                  Makefile Build System for Fawkes: Plugins
+#             Makefile Build System for Fawkes: Beep Daemon QA
 #                            -------------------
-#   Created on Mon Dec 04 14:54:17 2006
-#   Copyright (C) 2006-2008 by Tim Niemueller, AllemaniACs RoboCup Team
+#   Created on Sun Apr 11 22:25:47 2010
+#   Copyright (C) 2006-2010 by Tim Niemueller, AllemaniACs RoboCup Team
 #
 #*****************************************************************************
 #
@@ -13,17 +13,13 @@
 #
 #*****************************************************************************
 
-BASEDIR = ../..
+BASEDIR = ../../../..
 include $(BASEDIR)/etc/buildsys/config.mk
 
-# base + hardware drivers + functional + integration
-SUBDIRS	= bbsync bblogger webview ttmainloop \
-	  laser flite joystick katana pantilt \
-	  skiller luaagent worldmodel laserht \
-	  refboxcomm player xmlrpc
-	  #festival readylogagent
+LIBS_qa_remote_beep = fawkescore fawkesutils fawkesblackboard SwitchInterface
+OBJS_qa_remote_beep = qa_remote_beep.o
+BINS_all = $(BINDIR)/qa_remote_beep
 
-include $(BUILDSYSDIR)/rules.mk
+OBJS_all = $(OBJS_qa_remote_beep)
 
-luaagent: skiller
-
+include $(BUILDSYSDIR)/base.mk

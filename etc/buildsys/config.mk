@@ -179,14 +179,6 @@ ifeq ($(OS),FreeBSD)
   LDFLAGS_BASE     += -L/usr/local/lib -lpthread
 endif
 
-ifeq ($(DO_32BIT_BUILD),1)
-  CFLAGS_BASE  += -m32
-  LDFLAGS_BASE += -m32
-
-  PKGCONFIG = PKG_CONFIG_PATH=/usr/lib/pkgconfig PKG_CONFIG_LIBDIR=$$PKG_CONFIG_PATH pkg-config
-  ARCH=i386
-endif
-
 # Required if BASEDIR != EXEC_BASEDIR
 export LD_LIBRARY_PATH=$(call merge,:, $(LIBDIRS_BASE) $(LIBDIRS))
 
@@ -236,6 +228,15 @@ else
   ifneq ($(wildcard $(notdir $(CURDIR)).mk),)
     include $(notdir $(CURDIR)).mk
   endif
+endif
+
+ifeq ($(DO_32BIT_BUILD),1)
+  CFLAGS_BASE  += -m32
+  LDFLAGS_BASE += -m32
+
+  SYSLIBDIR32 = /usr/lib$(if $(wildcard /usr/lib32),32)
+  PKGCONFIG = PKG_CONFIG_PATH=$(SYSLIBDIR32)/pkgconfig PKG_CONFIG_LIBDIR=$$PKG_CONFIG_PATH; pkg-config
+  ARCH=i386
 endif
 
 endif # __buildsys_config_mk_
