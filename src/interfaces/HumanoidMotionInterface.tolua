@@ -133,6 +133,26 @@ class HumanoidMotionInterface : public Interface
     int maxlenof_num_samples() const;
   };
 
+  class StartWalkMessage : public Message
+  {
+    StartWalkMessage(float ini_x, float ini_y, float ini_theta, float ini_speed);
+    StartWalkMessage();
+    ~StartWalkMessage();
+
+    float x();
+    void set_x(const float new_x);
+    int maxlenof_x() const;
+    float y();
+    void set_y(const float new_y);
+    int maxlenof_y() const;
+    float theta();
+    void set_theta(const float new_theta);
+    int maxlenof_theta() const;
+    float speed();
+    void set_speed(const float new_speed);
+    int maxlenof_speed() const;
+  };
+
   class TurnMessage : public Message
   {
     TurnMessage(float ini_angle, unsigned int ini_num_samples);

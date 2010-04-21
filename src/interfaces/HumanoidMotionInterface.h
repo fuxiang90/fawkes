@@ -358,6 +358,41 @@ class HumanoidMotionInterface : public Interface
     virtual Message * clone() const;
   };
 
+  class StartWalkMessage : public Message
+  {
+   private:
+    /** Internal data storage, do NOT modify! */
+    typedef struct {
+      float x; /**< Fraction of MaxStepX. Use negative for backwards. [-1.0 to 1.0] */
+      float y; /**< Fraction of MaxStepY. Use negative for right. [-1.0 to 1.0] */
+      float theta; /**< Fraction of MaxStepTheta. Use negative for clockwise [-1.0 to 1.0] */
+      float speed; /**< Fraction of MaxStepFrequency [0.0 to 1.0] */
+    } StartWalkMessage_data_t;
+
+    StartWalkMessage_data_t *data;
+
+   public:
+    StartWalkMessage(const float ini_x, const float ini_y, const float ini_theta, const float ini_speed);
+    StartWalkMessage();
+    ~StartWalkMessage();
+
+    StartWalkMessage(const StartWalkMessage *m);
+    /* Methods */
+    float x() const;
+    void set_x(const float new_x);
+    size_t maxlenof_x() const;
+    float y() const;
+    void set_y(const float new_y);
+    size_t maxlenof_y() const;
+    float theta() const;
+    void set_theta(const float new_theta);
+    size_t maxlenof_theta() const;
+    float speed() const;
+    void set_speed(const float new_speed);
+    size_t maxlenof_speed() const;
+    virtual Message * clone() const;
+  };
+
   class TurnMessage : public Message
   {
    private:
