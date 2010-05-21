@@ -43,6 +43,8 @@ namespace fawkes {
   class PluginTreeView;
 }
 
+class SkillChannelView;
+
 #ifdef USE_PAPYRUS
 class SkillGuiGraphViewport;
 #else
@@ -106,7 +108,6 @@ class SkillGuiGtkWindow : public Gtk::Window
   Gtk::ComboBoxEntry     *cbe_skillstring;
   Gtk::Label             *lab_status;
   Gtk::Label             *lab_alive;
-  Gtk::Label             *lab_continuous;
   Gtk::Label             *lab_skillstring;
   Gtk::Label             *lab_error;
   Gtk::ScrolledWindow    *scw_graph;
@@ -153,6 +154,7 @@ class SkillGuiGtkWindow : public Gtk::Window
   fawkes::LogView         *__logview;
   fawkes::Throbber        *__throbber;
   fawkes::PluginTreeView  *__trv_plugins;
+  SkillChannelView 	  *__trv_skill_channels;
 
   bool __update_graph;
 };

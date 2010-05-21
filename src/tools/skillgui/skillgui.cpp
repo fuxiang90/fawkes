@@ -27,6 +27,8 @@
 #  include "graph_drawing_area.h"
 #endif
 
+#include "skill_channel_view.h"
+
 #include <utils/system/argparser.h>
 #include <blackboard/remote.h>
 #include <netcomm/fawkes/client.h>
@@ -81,7 +83,6 @@ SkillGuiGtkWindow::SkillGuiGtkWindow(BaseObjectType* cobject,
   refxml->get_widget("but_stop", but_stop);
   refxml->get_widget("lab_status", lab_status);
   refxml->get_widget("lab_alive", lab_alive);
-  refxml->get_widget("lab_continuous", lab_continuous);
   refxml->get_widget("lab_skillstring", lab_skillstring);
   refxml->get_widget("lab_error", lab_error);
   refxml->get_widget("scw_graph", scw_graph);
@@ -109,6 +110,7 @@ SkillGuiGtkWindow::SkillGuiGtkWindow(BaseObjectType* cobject,
 
   refxml->get_widget_derived("img_throbber", __throbber);
   refxml->get_widget_derived("trv_plugins",  __trv_plugins);
+  refxml->get_widget_derived("trv_skill_channels", __trv_skill_channels);
   
   Gtk::SeparatorToolItem *spacesep;
   refxml->get_widget("tb_spacesep", spacesep);
@@ -310,7 +312,7 @@ void
 SkillGuiGtkWindow::on_stop_clicked()
 {
   if ( bb && __skiller_if && __skiller_if->is_valid() && __skiller_if->has_writer() ) {
-    SkillerInterface::StopExecMessage *sem = new SkillerInterface::StopExecMessage();
+    SkillerInterface::StopAllMessage *sem = new SkillerInterface::StopAllMessage();
     __skiller_if->msgq_enqueue(sem);
   }
 }
@@ -351,9 +353,12 @@ SkillGuiGtkWindow::on_connect()
       __skiller_if = bb->open_for_reading<SkillerInterface>("Skiller");
       __skdbg_if   = bb->open_for_reading<SkillerDebugInterface>("Skiller");
       __agdbg_if   = bb->open_for_reading<SkillerDebugInterface>("LuaAgent");
+      __trv_skill_channels->setup_channels(__skiller_if);
       on_skiller_data_changed();
       on_skdbg_data_changed();
       on_agdbg_data_changed();
+
+
 
       __skiller_ifd = new InterfaceDispatcher("Skiller IFD", __skiller_if);
       __skdbg_ifd   = new InterfaceDispatcher("SkillerDebug IFD", __skdbg_if);
@@ -415,6 +420,7 @@ SkillGuiGtkWindow::on_disconnect()
   pvp_graph->queue_draw();
 #endif
   __logview->set_client(NULL);
+  __trv_skill_channels->clear_channels();
 
   this->set_title("Skill GUI");
 }
@@ -438,13 +444,8 @@ SkillGuiGtkWindow::on_exec_clicked()
     if (__skiller_if && __skiller_if->is_valid() && __skiller_if->has_writer() &&
 	__skiller_if->exclusive_controller() == __skiller_if->serial()) {
 
-      if ( but_continuous->get_active() ) {
-	SkillerInterface::ExecSkillContinuousMessage *escm = new SkillerInterface::ExecSkillContinuousMessage(sks.c_str());
-	__skiller_if->msgq_enqueue(escm);
-      } else {
-	SkillerInterface::ExecSkillMessage *esm = new SkillerInterface::ExecSkillMessage(sks.c_str());
-	__skiller_if->msgq_enqueue(esm);
-      }
+      SkillerInterface::ExecSkillMessage *esm = new SkillerInterface::ExecSkillMessage(sks.c_str());
+      __skiller_if->msgq_enqueue(esm);
 
       Gtk::TreeModel::Children children = __sks_list->children();
       bool ok = true;
@@ -495,25 +496,31 @@ SkillGuiGtkWindow::on_skiller_data_changed()
   try {
     __skiller_if->read();
 
-    switch (__skiller_if->status()) {
-    case SkillerInterface::S_INACTIVE:
-      __throbber->stop_anim();
-      lab_status->set_text("S_INACTIVE");
-      break;
-    case SkillerInterface::S_FINAL:
-      __throbber->stop_anim();
-      __throbber->set_stock(Gtk::Stock::APPLY);
-      lab_status->set_text("S_FINAL");
-      break;
-    case SkillerInterface::S_RUNNING:
-      __throbber->start_anim();
-      lab_status->set_text("S_RUNNING");
-      break;
-    case SkillerInterface::S_FAILED:
+    unsigned int inactive = 0, final = 0, running = 0, failed = 0;
+    SkillerInterface::SkillStatusEnum *status = __skiller_if->status();
+    for (unsigned int i = 0; i < __skiller_if->maxlenof_status(); ++i) {
+      switch (status[i]) {
+      case SkillerInterface::S_INACTIVE: ++inactive; break;
+      case SkillerInterface::S_FINAL:    ++final;    break;
+      case SkillerInterface::S_RUNNING:  ++running;  break;
+      case SkillerInterface::S_FAILED:   ++failed;   break;
+      }
+    }
+
+    if (failed > 0) {
       __throbber->stop_anim();
       __throbber->set_stock(Gtk::Stock::DIALOG_WARNING);
       lab_status->set_text("S_FAILED");
-      break;
+    } else if (running > 0) {
+      __throbber->start_anim();
+      lab_status->set_text("S_RUNNING");
+    } else if (final > 0) {
+      __throbber->stop_anim();
+      __throbber->set_stock(Gtk::Stock::APPLY);
+      lab_status->set_text("S_FINAL");
+    } else {
+      __throbber->stop_anim();
+      lab_status->set_text("S_INACTIVE");
     }
 
     lab_skillstring->set_text(__skiller_if->skill_string());
@@ -522,7 +529,6 @@ SkillGuiGtkWindow::on_skiller_data_changed()
     lab_skillstring->set_tooltip_text(__skiller_if->skill_string());
     lab_error->set_tooltip_text(__skiller_if->error());
 #endif
-    lab_continuous->set_text(__skiller_if->is_continuous() ? "Yes" : "No");
     lab_alive->set_text(__skiller_if->has_writer() ? "Yes" : "No");
 
     if ( __skiller_if->exclusive_controller() == __skiller_if->serial() ) {
@@ -545,7 +551,7 @@ SkillGuiGtkWindow::on_skiller_data_changed()
       but_stop->set_sensitive(false);
     }
 
-
+    __trv_skill_channels->update_channels();
   } catch (Exception &e) {
     __throbber->stop_anim();
   }

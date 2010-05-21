@@ -22,6 +22,7 @@
 
 #include <netcomm/fawkes/client.h>
 #include <blackboard/remote.h>
+#include <blackboard/interface_listener.h>
 #include <utils/system/argparser.h>
 #include <utils/system/signal.h>
 #include <core/threading/thread.h>
@@ -63,26 +64,26 @@ event_hook()
  * and uses the skiller network protocol.
  * @author Tim Niemueller
  */
-class SkillShellThread : public Thread, public FawkesNetworkClientHandler
+class SkillShellThread
+  : public Thread,
+    public FawkesNetworkClientHandler,
+    public BlackBoardInterfaceListener
 {
  public:
   /** Constructor.
    * @param argp argument parser
    */
   SkillShellThread(ArgumentParser *argp)
-    : Thread("SkillShellThread", Thread::OPMODE_CONTINUOUS)
+    : Thread("SkillShellThread", Thread::OPMODE_CONTINUOUS),
+      BlackBoardInterfaceListener("SkillShellThread")
   {
     this->argp = argp;
     prompt = "-# ";
-    just_connected = true;
-    connection_died_recently = false;
 
     sif = NULL;
     using_history();
     // this is needed to get rl_done working
     rl_event_hook = event_hook;
-
-    continuous = false;
 
     char *host = (char *)"localhost";
     unsigned short int port = 1910;
@@ -101,8 +102,10 @@ class SkillShellThread : public Thread, public FawkesNetworkClientHandler
   {
     printf("Finalizing\n");
 
-    SkillerInterface::ReleaseControlMessage *rcm = new SkillerInterface::ReleaseControlMessage();
-    sif->msgq_enqueue(rcm);
+    if (rbb && rbb->is_alive() && sif->is_valid() && sif->has_writer()) {
+      SkillerInterface::ReleaseControlMessage *rcm = new SkillerInterface::ReleaseControlMessage();
+      sif->msgq_enqueue(rcm);
+    }
 
     usleep(500000);
 
@@ -119,20 +122,6 @@ class SkillShellThread : public Thread, public FawkesNetworkClientHandler
   virtual void loop()
   {
     if ( c->connected() ) {
-      if ( just_connected ) {
-	just_connected = false;
-	try {
-	  rbb = new RemoteBlackBoard(c);
-	  sif = rbb->open_for_reading<SkillerInterface>("Skiller");
-	  SkillerInterface::AcquireControlMessage *aqm = new SkillerInterface::AcquireControlMessage();
-	  sif->msgq_enqueue(aqm);
-	  usleep(100000);
-	} catch (Exception &e) {
-	  e.print_trace();
-	  return;
-	}
-      }
-
       if ( argp->num_items() > 0 ) {
 	std::string sks = "";
 	const std::vector< const char * > & items = argp->items();
@@ -156,42 +145,28 @@ class SkillShellThread : public Thread, public FawkesNetworkClientHandler
 	line = readline(prompt);
 	if ( line ) {
 	  if (strcmp(line, "") != 0) {
-
-	    if ( strcmp(line, "cont") == 0 ) {
-	      printf("Switching to continuous skill execution mode\n");
-	      continuous = true;
-	    } else if (strcmp(line, "oneshot") == 0 ) {
-	      printf("Switching to one-shot skill execution mode\n");
-	      continuous = false;
-	    } else if (strcmp(line, "stop") == 0 ) {
-	      printf("Stopping continuous skill execution\n");
-	      SkillerInterface::StopExecMessage *sm = new SkillerInterface::StopExecMessage();
-	      sif->msgq_enqueue(sm);
-	    } else {
-	      printf("Executing: %s\n", line);
-	      if ( continuous ) {
-		SkillerInterface::ExecSkillContinuousMessage *escm = new SkillerInterface::ExecSkillContinuousMessage(line);
-		sif->msgq_enqueue(escm);
+	    
+	    if (sif->is_valid()) {
+	      if (strcmp(line, "stop") == 0 ) {
+		printf("Stopping skill execution\n");
+		SkillerInterface::StopAllMessage *sm = new SkillerInterface::StopAllMessage();
+		sif->msgq_enqueue(sm);
 	      } else {
-		SkillerInterface::ExecSkillMessage *esm = new SkillerInterface::ExecSkillMessage(line);
-		sif->msgq_enqueue(esm);
+		printf("Executing: %s\n", line);
+		SkillerInterface::ExecSkillMessage *escm = new SkillerInterface::ExecSkillMessage(line);
+		sif->msgq_enqueue(escm);
 	      }
+	    } else {
+	      printf("No connection\n");
 	    }
-
 	    add_history(line);
 	  }
 	} else {
-	  if ( ! connection_died_recently ) {
-	    exit();
-	  }
+	  //if ( ! connection_died_recently ) {
+	  exit();
 	}
       }
     } else {
-      if ( connection_died_recently ) {
-	connection_died_recently = false;
-	printf("Connection died\n");
-	c->disconnect();
-      }
       try {
 	c->connect();
       } catch (Exception &e) {
@@ -203,11 +178,6 @@ class SkillShellThread : public Thread, public FawkesNetworkClientHandler
   }
 
   
-  virtual void deregistered(unsigned int id) throw()
-  {
-  }
-
-
   virtual void inbound_received(FawkesNetworkMessage *m,
 				unsigned int id) throw()
   {
@@ -218,12 +188,14 @@ class SkillShellThread : public Thread, public FawkesNetworkClientHandler
   {
     prompt = "-# ";
 
+    rbb->unregister_listener(this);
+    bbil_remove_writer_interface(sif);
     rbb->close(sif);
     delete rbb;
     rbb = NULL;
     sif = NULL;
 
-    connection_died_recently = true;
+    printf("Connection lost\n");
 
     //fprintf(stdin, "\n");
     //kill(SIGINT);
@@ -234,8 +206,38 @@ class SkillShellThread : public Thread, public FawkesNetworkClientHandler
   virtual void connection_established(unsigned int id) throw()
   {
     printf("Connection established\n");
-    just_connected = true;
     prompt = "+# ";
+
+    try {
+      rbb = new RemoteBlackBoard(c);
+      sif = rbb->open_for_reading<SkillerInterface>("Skiller");
+      bbil_add_writer_interface(sif);
+      rbb->register_listener(this, BlackBoard::BBIL_FLAG_WRITER);
+      if (sif->has_writer()) {
+	SkillerInterface::AcquireControlMessage *aqm = new SkillerInterface::AcquireControlMessage();
+	sif->msgq_enqueue(aqm);
+      } else {
+	printf("Skiller not loaded\n");
+      }
+      usleep(100000);
+    } catch (Exception &e) {
+      e.print_trace();
+    }
+  }
+
+  virtual void bb_interface_writer_added(Interface *interface,
+					 unsigned int instance_serial) throw()
+  {
+    printf("Skiller has been loaded, registering as exclusive controller\n");
+    SkillerInterface::AcquireControlMessage *aqm = new SkillerInterface::AcquireControlMessage();
+    sif->msgq_enqueue(aqm);
+  }
+
+
+  virtual void bb_interface_writer_removed(Interface *interface,
+					   unsigned int instance_serial) throw()
+  {
+    printf("Skiller has been unloaded\n");
   }
 
 
@@ -245,10 +247,6 @@ class SkillShellThread : public Thread, public FawkesNetworkClientHandler
   BlackBoard *rbb;
   SkillerInterface *sif;
   const char *prompt;
-  bool just_connected;
-  bool connection_died_recently;
-
-  bool continuous;
 };
 
 
@@ -266,9 +264,13 @@ main(int argc, char **argv)
     exit(0);
   }
 
-  SkillShellThread sst(&argp);
-  sst.start();
-  sst.join();
+  try {
+    SkillShellThread sst(&argp);
+    sst.start();
+    sst.join();
+  } catch (Exception &e) {
+    printf("%s\n", e.what());
+  }
 
   return 0;
 }
