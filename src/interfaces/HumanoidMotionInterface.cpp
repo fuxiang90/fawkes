@@ -71,6 +71,7 @@ HumanoidMotionInterface::HumanoidMotionInterface() : Interface()
   add_messageinfo("WalkStraightMessage");
   add_messageinfo("WalkSidewaysMessage");
   add_messageinfo("WalkArcMessage");
+  add_messageinfo("StartWalkMessage");
   add_messageinfo("TurnMessage");
   add_messageinfo("KickMessage");
   add_messageinfo("ParkMessage");
@@ -78,7 +79,7 @@ HumanoidMotionInterface::HumanoidMotionInterface() : Interface()
   add_messageinfo("StandupMessage");
   add_messageinfo("YawPitchHeadMessage");
   add_messageinfo("SetStiffnessParamsMessage");
-  unsigned char tmp_hash[] = {0x69, 0x80, 0xac, 0xd5, 0xa4, 0x71, 0xad, 0xe8, 0xd6, 0xdf, 0xbb, 0x13, 0xfb, 0x10, 0x28, 0xf1};
+  unsigned char tmp_hash[] = {0x7a, 0x33, 0x49, 0x60, 0x9e, 0x8a, 0x75, 0xdf, 0x11, 0x1a, 0x3c, 0x6b, 0xc, 0xcf, 0xa1, 0x22};
   set_hash(tmp_hash);
 }
 
@@ -758,6 +759,8 @@ HumanoidMotionInterface::create_message(const char *type) const
     return new WalkSidewaysMessage();
   } else if ( strncmp("WalkArcMessage", type, __INTERFACE_MESSAGE_TYPE_SIZE) == 0 ) {
     return new WalkArcMessage();
+  } else if ( strncmp("StartWalkMessage", type, __INTERFACE_MESSAGE_TYPE_SIZE) == 0 ) {
+    return new StartWalkMessage();
   } else if ( strncmp("TurnMessage", type, __INTERFACE_MESSAGE_TYPE_SIZE) == 0 ) {
     return new TurnMessage();
   } else if ( strncmp("KickMessage", type, __INTERFACE_MESSAGE_TYPE_SIZE) == 0 ) {
@@ -1940,6 +1943,195 @@ Message *
 HumanoidMotionInterface::WalkArcMessage::clone() const
 {
   return new HumanoidMotionInterface::WalkArcMessage(this);
+}
+/** @class HumanoidMotionInterface::StartWalkMessage <interfaces/HumanoidMotionInterface.h>
+ * StartWalkMessage Fawkes BlackBoard Interface Message.
+ * 
+    
+ */
+
+
+/** Constructor with initial values.
+ * @param ini_x initial value for x
+ * @param ini_y initial value for y
+ * @param ini_theta initial value for theta
+ * @param ini_speed initial value for speed
+ */
+HumanoidMotionInterface::StartWalkMessage::StartWalkMessage(const float ini_x, const float ini_y, const float ini_theta, const float ini_speed) : Message("StartWalkMessage")
+{
+  data_size = sizeof(StartWalkMessage_data_t);
+  data_ptr  = malloc(data_size);
+  memset(data_ptr, 0, data_size);
+  data      = (StartWalkMessage_data_t *)data_ptr;
+  data->x = ini_x;
+  data->y = ini_y;
+  data->theta = ini_theta;
+  data->speed = ini_speed;
+  add_fieldinfo(IFT_FLOAT, "x", 1, &data->x);
+  add_fieldinfo(IFT_FLOAT, "y", 1, &data->y);
+  add_fieldinfo(IFT_FLOAT, "theta", 1, &data->theta);
+  add_fieldinfo(IFT_FLOAT, "speed", 1, &data->speed);
+}
+/** Constructor */
+HumanoidMotionInterface::StartWalkMessage::StartWalkMessage() : Message("StartWalkMessage")
+{
+  data_size = sizeof(StartWalkMessage_data_t);
+  data_ptr  = malloc(data_size);
+  memset(data_ptr, 0, data_size);
+  data      = (StartWalkMessage_data_t *)data_ptr;
+  add_fieldinfo(IFT_FLOAT, "x", 1, &data->x);
+  add_fieldinfo(IFT_FLOAT, "y", 1, &data->y);
+  add_fieldinfo(IFT_FLOAT, "theta", 1, &data->theta);
+  add_fieldinfo(IFT_FLOAT, "speed", 1, &data->speed);
+}
+
+/** Destructor */
+HumanoidMotionInterface::StartWalkMessage::~StartWalkMessage()
+{
+  free(data_ptr);
+}
+
+/** Copy constructor.
+ * @param m message to copy from
+ */
+HumanoidMotionInterface::StartWalkMessage::StartWalkMessage(const StartWalkMessage *m) : Message("StartWalkMessage")
+{
+  data_size = m->data_size;
+  data_ptr  = malloc(data_size);
+  memcpy(data_ptr, m->data_ptr, data_size);
+  data      = (StartWalkMessage_data_t *)data_ptr;
+}
+
+/* Methods */
+/** Get x value.
+ * Fraction of MaxStepX. Use negative for backwards. [-1.0 to 1.0]
+ * @return x value
+ */
+float
+HumanoidMotionInterface::StartWalkMessage::x() const
+{
+  return data->x;
+}
+
+/** Get maximum length of x value.
+ * @return length of x value, can be length of the array or number of 
+ * maximum number of characters for a string
+ */
+size_t
+HumanoidMotionInterface::StartWalkMessage::maxlenof_x() const
+{
+  return 1;
+}
+
+/** Set x value.
+ * Fraction of MaxStepX. Use negative for backwards. [-1.0 to 1.0]
+ * @param new_x new x value
+ */
+void
+HumanoidMotionInterface::StartWalkMessage::set_x(const float new_x)
+{
+  data->x = new_x;
+}
+
+/** Get y value.
+ * Fraction of MaxStepY. Use negative for right. [-1.0 to 1.0]
+ * @return y value
+ */
+float
+HumanoidMotionInterface::StartWalkMessage::y() const
+{
+  return data->y;
+}
+
+/** Get maximum length of y value.
+ * @return length of y value, can be length of the array or number of 
+ * maximum number of characters for a string
+ */
+size_t
+HumanoidMotionInterface::StartWalkMessage::maxlenof_y() const
+{
+  return 1;
+}
+
+/** Set y value.
+ * Fraction of MaxStepY. Use negative for right. [-1.0 to 1.0]
+ * @param new_y new y value
+ */
+void
+HumanoidMotionInterface::StartWalkMessage::set_y(const float new_y)
+{
+  data->y = new_y;
+}
+
+/** Get theta value.
+ * Fraction of MaxStepTheta. Use negative for clockwise [-1.0 to 1.0]
+ * @return theta value
+ */
+float
+HumanoidMotionInterface::StartWalkMessage::theta() const
+{
+  return data->theta;
+}
+
+/** Get maximum length of theta value.
+ * @return length of theta value, can be length of the array or number of 
+ * maximum number of characters for a string
+ */
+size_t
+HumanoidMotionInterface::StartWalkMessage::maxlenof_theta() const
+{
+  return 1;
+}
+
+/** Set theta value.
+ * Fraction of MaxStepTheta. Use negative for clockwise [-1.0 to 1.0]
+ * @param new_theta new theta value
+ */
+void
+HumanoidMotionInterface::StartWalkMessage::set_theta(const float new_theta)
+{
+  data->theta = new_theta;
+}
+
+/** Get speed value.
+ * Fraction of MaxStepFrequency [0.0 to 1.0]
+ * @return speed value
+ */
+float
+HumanoidMotionInterface::StartWalkMessage::speed() const
+{
+  return data->speed;
+}
+
+/** Get maximum length of speed value.
+ * @return length of speed value, can be length of the array or number of 
+ * maximum number of characters for a string
+ */
+size_t
+HumanoidMotionInterface::StartWalkMessage::maxlenof_speed() const
+{
+  return 1;
+}
+
+/** Set speed value.
+ * Fraction of MaxStepFrequency [0.0 to 1.0]
+ * @param new_speed new speed value
+ */
+void
+HumanoidMotionInterface::StartWalkMessage::set_speed(const float new_speed)
+{
+  data->speed = new_speed;
+}
+
+/** Clone this message.
+ * Produces a message of the same type as this message and copies the
+ * data to the new message.
+ * @return clone of this message
+ */
+Message *
+HumanoidMotionInterface::StartWalkMessage::clone() const
+{
+  return new HumanoidMotionInterface::StartWalkMessage(this);
 }
 /** @class HumanoidMotionInterface::TurnMessage <interfaces/HumanoidMotionInterface.h>
  * TurnMessage Fawkes BlackBoard Interface Message.
@@ -3462,32 +3654,36 @@ HumanoidMotionInterface::message_valid(const Message *message) const
   if ( m5 != NULL ) {
     return true;
   }
-  const TurnMessage *m6 = dynamic_cast<const TurnMessage *>(message);
+  const StartWalkMessage *m6 = dynamic_cast<const StartWalkMessage *>(message);
   if ( m6 != NULL ) {
     return true;
   }
-  const KickMessage *m7 = dynamic_cast<const KickMessage *>(message);
+  const TurnMessage *m7 = dynamic_cast<const TurnMessage *>(message);
   if ( m7 != NULL ) {
     return true;
   }
-  const ParkMessage *m8 = dynamic_cast<const ParkMessage *>(message);
+  const KickMessage *m8 = dynamic_cast<const KickMessage *>(message);
   if ( m8 != NULL ) {
     return true;
   }
-  const GetUpMessage *m9 = dynamic_cast<const GetUpMessage *>(message);
+  const ParkMessage *m9 = dynamic_cast<const ParkMessage *>(message);
   if ( m9 != NULL ) {
     return true;
   }
-  const StandupMessage *m10 = dynamic_cast<const StandupMessage *>(message);
+  const GetUpMessage *m10 = dynamic_cast<const GetUpMessage *>(message);
   if ( m10 != NULL ) {
     return true;
   }
-  const YawPitchHeadMessage *m11 = dynamic_cast<const YawPitchHeadMessage *>(message);
+  const StandupMessage *m11 = dynamic_cast<const StandupMessage *>(message);
   if ( m11 != NULL ) {
     return true;
   }
-  const SetStiffnessParamsMessage *m12 = dynamic_cast<const SetStiffnessParamsMessage *>(message);
+  const YawPitchHeadMessage *m12 = dynamic_cast<const YawPitchHeadMessage *>(message);
   if ( m12 != NULL ) {
+    return true;
+  }
+  const SetStiffnessParamsMessage *m13 = dynamic_cast<const SetStiffnessParamsMessage *>(message);
+  if ( m13 != NULL ) {
     return true;
   }
   return false;
