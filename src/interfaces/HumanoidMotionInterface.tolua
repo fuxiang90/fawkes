@@ -133,11 +133,11 @@ class HumanoidMotionInterface : public Interface
     int maxlenof_num_samples() const;
   };
 
-  class StartWalkMessage : public Message
+  class WalkMessage : public Message
   {
-    StartWalkMessage(float ini_x, float ini_y, float ini_theta, float ini_speed);
-    StartWalkMessage();
-    ~StartWalkMessage();
+    WalkMessage(float ini_x, float ini_y, float ini_theta, float ini_speed);
+    WalkMessage();
+    ~WalkMessage();
 
     float x();
     void set_x(const float new_x);

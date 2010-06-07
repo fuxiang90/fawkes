@@ -358,7 +358,7 @@ class HumanoidMotionInterface : public Interface
     virtual Message * clone() const;
   };
 
-  class StartWalkMessage : public Message
+  class WalkMessage : public Message
   {
    private:
     /** Internal data storage, do NOT modify! */
@@ -367,16 +367,16 @@ class HumanoidMotionInterface : public Interface
       float y; /**< Fraction of MaxStepY. Use negative for right. [-1.0 to 1.0] */
       float theta; /**< Fraction of MaxStepTheta. Use negative for clockwise [-1.0 to 1.0] */
       float speed; /**< Fraction of MaxStepFrequency [0.0 to 1.0] */
-    } StartWalkMessage_data_t;
+    } WalkMessage_data_t;
 
-    StartWalkMessage_data_t *data;
+    WalkMessage_data_t *data;
 
    public:
-    StartWalkMessage(const float ini_x, const float ini_y, const float ini_theta, const float ini_speed);
-    StartWalkMessage();
-    ~StartWalkMessage();
+    WalkMessage(const float ini_x, const float ini_y, const float ini_theta, const float ini_speed);
+    WalkMessage();
+    ~WalkMessage();
 
-    StartWalkMessage(const StartWalkMessage *m);
+    WalkMessage(const WalkMessage *m);
     /* Methods */
     float x() const;
     void set_x(const float new_x);
