@@ -112,3 +112,13 @@ function intersection(a,b)
    end
    return intersect_set
 end
+
+-- Print all items of a set
+function to_string(set)
+   item_list = {}
+   for item,_ in pairs(set) do
+      table.insert(item_list,tostring(item))
+   end
+   set_string = table.concat(item_list,", ")
+   return "{"..set_string.."}"
+end
