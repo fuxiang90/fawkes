@@ -53,25 +53,15 @@ SkillerInterface::SkillerInterface() : Interface()
   memset(data_ptr, 0, data_size);
   add_fieldinfo(IFT_STRING, "skill_string", 1024, data->skill_string);
   add_fieldinfo(IFT_STRING, "error", 128, data->error);
-<<<<<<< HEAD
-  add_fieldinfo(IFT_UINT, "exclusive_controller", 1, &data->exclusive_controller);
-  add_fieldinfo(IFT_ENUM, "status", 8, &data->status, "SkillStatusEnum");
-  add_fieldinfo(IFT_UINT, "msgid", 8, &data->msgid);
-=======
   add_fieldinfo(IFT_UINT32, "exclusive_controller", 1, &data->exclusive_controller);
-  add_fieldinfo(IFT_ENUM, "status", 1, &data->status, "SkillStatusEnum");
-  add_fieldinfo(IFT_BOOL, "continuous", 1, &data->continuous);
->>>>>>> remotes/origin/timn/refboxcomm-spl-gc7
+  add_fieldinfo(IFT_ENUM, "status", 8, &data->status, "SkillStatusEnum");
+  add_fieldinfo(IFT_UINT32, "msgid", 8, &data->msgid);
   add_messageinfo("ExecSkillMessage");
   add_messageinfo("StopExecMessage");
   add_messageinfo("StopAllMessage");
   add_messageinfo("AcquireControlMessage");
   add_messageinfo("ReleaseControlMessage");
-<<<<<<< HEAD
-  unsigned char tmp_hash[] = {0x38, 0xff, 0xb, 0x7d, 0x77, 0x23, 0x30, 0x4b, 0x31, 0x6, 0x9b, 0xaa, 0x72, 0x1c, 0x81, 0x88};
-=======
-  unsigned char tmp_hash[] = {0x7c, 0x85, 0xf3, 0x24, 0xea, 0x55, 0x50, 0xa1, 0x6c, 0xdb, 0xdc, 0x4b, 0x40, 0xba, 0xa1, 0xda};
->>>>>>> remotes/origin/timn/refboxcomm-spl-gc7
+  unsigned char tmp_hash[] = {0xa6, 0x7a, 0xc9, 0x60, 0x3c, 0x40, 0x5, 0xf9, 0x80, 0xee, 0x67, 0x1, 0x20, 0xba, 0x61, 0x1f};
   set_hash(tmp_hash);
 }
 
@@ -275,12 +265,8 @@ SkillerInterface::maxlenof_status() const
 void
 SkillerInterface::set_status(const SkillStatusEnum * new_status)
 {
-<<<<<<< HEAD
   memcpy(data->status, new_status, sizeof(SkillStatusEnum) * 8);
-=======
-  data->status = new_status;
   data_changed = true;
->>>>>>> remotes/origin/timn/refboxcomm-spl-gc7
 }
 
 /** Set status value at given index.
@@ -303,7 +289,7 @@ SkillerInterface::set_status(unsigned int index, const SkillStatusEnum new_statu
     
  * @return msgid value
  */
-unsigned int *
+uint32_t *
 SkillerInterface::msgid() const
 {
   return data->msgid;
@@ -316,7 +302,7 @@ SkillerInterface::msgid() const
  * @return msgid value
  * @exception Exception thrown if index is out of bounds
  */
-unsigned int
+uint32_t
 SkillerInterface::msgid(unsigned int index) const
 {
   if (index > 8) {
@@ -341,14 +327,10 @@ SkillerInterface::maxlenof_msgid() const
  * @param new_msgid new msgid value
  */
 void
-SkillerInterface::set_msgid(const unsigned int * new_msgid)
+SkillerInterface::set_msgid(const uint32_t * new_msgid)
 {
-<<<<<<< HEAD
-  memcpy(data->msgid, new_msgid, sizeof(unsigned int) * 8);
-=======
-  data->continuous = new_continuous;
+  memcpy(data->msgid, new_msgid, sizeof(uint32_t) * 8);
   data_changed = true;
->>>>>>> remotes/origin/timn/refboxcomm-spl-gc7
 }
 
 /** Set msgid value at given index.
@@ -358,7 +340,7 @@ SkillerInterface::set_msgid(const unsigned int * new_msgid)
  * @param index index for of the value
  */
 void
-SkillerInterface::set_msgid(unsigned int index, const unsigned int new_msgid)
+SkillerInterface::set_msgid(unsigned int index, const uint32_t new_msgid)
 {
   if (index > 8) {
     throw Exception("Index value %u out of bounds (0..8)", index);
@@ -528,21 +510,15 @@ SkillerInterface::ExecSkillMessage::clone() const
 /** Constructor with initial values.
  * @param ini_channel initial value for channel
  */
-SkillerInterface::StopExecMessage::StopExecMessage(const unsigned int ini_channel) : Message("StopExecMessage")
+SkillerInterface::StopExecMessage::StopExecMessage(const uint32_t ini_channel) : Message("StopExecMessage")
 {
   data_size = sizeof(StopExecMessage_data_t);
   data_ptr  = malloc(data_size);
   memset(data_ptr, 0, data_size);
-<<<<<<< HEAD
   data      = (StopExecMessage_data_t *)data_ptr;
-  data->channel = ini_channel;
-  add_fieldinfo(IFT_UINT, "channel", 1, &data->channel);
-=======
-  data      = (ExecSkillContinuousMessage_data_t *)data_ptr;
   data_ts   = (message_data_ts_t *)data_ptr;
-  strncpy(data->skill_string, ini_skill_string, 1024);
-  add_fieldinfo(IFT_STRING, "skill_string", 1024, data->skill_string);
->>>>>>> remotes/origin/timn/refboxcomm-spl-gc7
+  data->channel = ini_channel;
+  add_fieldinfo(IFT_UINT32, "channel", 1, &data->channel);
 }
 /** Constructor */
 SkillerInterface::StopExecMessage::StopExecMessage() : Message("StopExecMessage")
@@ -550,14 +526,9 @@ SkillerInterface::StopExecMessage::StopExecMessage() : Message("StopExecMessage"
   data_size = sizeof(StopExecMessage_data_t);
   data_ptr  = malloc(data_size);
   memset(data_ptr, 0, data_size);
-<<<<<<< HEAD
   data      = (StopExecMessage_data_t *)data_ptr;
-  add_fieldinfo(IFT_UINT, "channel", 1, &data->channel);
-=======
-  data      = (ExecSkillContinuousMessage_data_t *)data_ptr;
   data_ts   = (message_data_ts_t *)data_ptr;
-  add_fieldinfo(IFT_STRING, "skill_string", 1024, data->skill_string);
->>>>>>> remotes/origin/timn/refboxcomm-spl-gc7
+  add_fieldinfo(IFT_UINT32, "channel", 1, &data->channel);
 }
 
 /** Destructor */
@@ -574,12 +545,8 @@ SkillerInterface::StopExecMessage::StopExecMessage(const StopExecMessage *m) : M
   data_size = m->data_size;
   data_ptr  = malloc(data_size);
   memcpy(data_ptr, m->data_ptr, data_size);
-<<<<<<< HEAD
   data      = (StopExecMessage_data_t *)data_ptr;
-=======
-  data      = (ExecSkillContinuousMessage_data_t *)data_ptr;
   data_ts   = (message_data_ts_t *)data_ptr;
->>>>>>> remotes/origin/timn/refboxcomm-spl-gc7
 }
 
 /* Methods */
@@ -587,7 +554,7 @@ SkillerInterface::StopExecMessage::StopExecMessage(const StopExecMessage *m) : M
  * Which channel to stop.
  * @return channel value
  */
-unsigned int
+uint32_t
 SkillerInterface::StopExecMessage::channel() const
 {
   return data->channel;
@@ -608,35 +575,9 @@ SkillerInterface::StopExecMessage::maxlenof_channel() const
  * @param new_channel new channel value
  */
 void
-SkillerInterface::StopExecMessage::set_channel(const unsigned int new_channel)
+SkillerInterface::StopExecMessage::set_channel(const uint32_t new_channel)
 {
-<<<<<<< HEAD
   data->channel = new_channel;
-=======
-  data_size = sizeof(RestartInterpreterMessage_data_t);
-  data_ptr  = malloc(data_size);
-  memset(data_ptr, 0, data_size);
-  data      = (RestartInterpreterMessage_data_t *)data_ptr;
-  data_ts   = (message_data_ts_t *)data_ptr;
-}
-
-/** Destructor */
-SkillerInterface::RestartInterpreterMessage::~RestartInterpreterMessage()
-{
-  free(data_ptr);
-}
-
-/** Copy constructor.
- * @param m message to copy from
- */
-SkillerInterface::RestartInterpreterMessage::RestartInterpreterMessage(const RestartInterpreterMessage *m) : Message("RestartInterpreterMessage")
-{
-  data_size = m->data_size;
-  data_ptr  = malloc(data_size);
-  memcpy(data_ptr, m->data_ptr, data_size);
-  data      = (RestartInterpreterMessage_data_t *)data_ptr;
-  data_ts   = (message_data_ts_t *)data_ptr;
->>>>>>> remotes/origin/timn/refboxcomm-spl-gc7
 }
 
 /** Clone this message.
@@ -659,10 +600,10 @@ SkillerInterface::StopExecMessage::clone() const
 /** Constructor */
 SkillerInterface::StopAllMessage::StopAllMessage() : Message("StopAllMessage")
 {
-  data_size = sizeof(StopExecMessage_data_t);
+  data_size = sizeof(StopAllMessage_data_t);
   data_ptr  = malloc(data_size);
   memset(data_ptr, 0, data_size);
-  data      = (StopExecMessage_data_t *)data_ptr;
+  data      = (StopAllMessage_data_t *)data_ptr;
   data_ts   = (message_data_ts_t *)data_ptr;
 }
 
@@ -680,7 +621,7 @@ SkillerInterface::StopAllMessage::StopAllMessage(const StopAllMessage *m) : Mess
   data_size = m->data_size;
   data_ptr  = malloc(data_size);
   memcpy(data_ptr, m->data_ptr, data_size);
-  data      = (StopExecMessage_data_t *)data_ptr;
+  data      = (StopAllMessage_data_t *)data_ptr;
   data_ts   = (message_data_ts_t *)data_ptr;
 }
 

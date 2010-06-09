@@ -80,7 +80,7 @@ HumanoidMotionInterface::HumanoidMotionInterface() : Interface()
   add_messageinfo("StandupMessage");
   add_messageinfo("YawPitchHeadMessage");
   add_messageinfo("SetStiffnessParamsMessage");
-  unsigned char tmp_hash[] = {0xee, 0x4a, 0x86, 0xce, 0x88, 0xf0, 0x83, 0xef, 0x80, 0xa, 0x8e, 0x3b, 0x3f, 0xae, 0xe3, 0x8b};
+  unsigned char tmp_hash[] = {0xfe, 0xae, 0xcc, 0x8b, 0x46, 0xd9, 0xf0, 0x74, 0x6, 0x6c, 0xca, 0x4f, 0x45, 0x13, 0x42, 0x73};
   set_hash(tmp_hash);
 }
 
@@ -2004,6 +2004,7 @@ HumanoidMotionInterface::WalkMessage::WalkMessage(const float ini_x, const float
   data_ptr  = malloc(data_size);
   memset(data_ptr, 0, data_size);
   data      = (WalkMessage_data_t *)data_ptr;
+  data_ts   = (message_data_ts_t *)data_ptr;
   data->x = ini_x;
   data->y = ini_y;
   data->theta = ini_theta;
@@ -2020,6 +2021,7 @@ HumanoidMotionInterface::WalkMessage::WalkMessage() : Message("WalkMessage")
   data_ptr  = malloc(data_size);
   memset(data_ptr, 0, data_size);
   data      = (WalkMessage_data_t *)data_ptr;
+  data_ts   = (message_data_ts_t *)data_ptr;
   add_fieldinfo(IFT_FLOAT, "x", 1, &data->x);
   add_fieldinfo(IFT_FLOAT, "y", 1, &data->y);
   add_fieldinfo(IFT_FLOAT, "theta", 1, &data->theta);
@@ -2041,6 +2043,7 @@ HumanoidMotionInterface::WalkMessage::WalkMessage(const WalkMessage *m) : Messag
   data_ptr  = malloc(data_size);
   memcpy(data_ptr, m->data_ptr, data_size);
   data      = (WalkMessage_data_t *)data_ptr;
+  data_ts   = (message_data_ts_t *)data_ptr;
 }
 
 /* Methods */

@@ -396,13 +396,17 @@ class HumanoidMotionInterface : public Interface
   class WalkMessage : public Message
   {
    private:
+#pragma pack(push,4)
     /** Internal data storage, do NOT modify! */
     typedef struct {
+      int64_t timestamp_sec;  /**< Interface Unix timestamp, seconds */
+      int64_t timestamp_usec; /**< Interface Unix timestamp, micro-seconds */
       float x; /**< Fraction of MaxStepX. Use negative for backwards. [-1.0 to 1.0] */
       float y; /**< Fraction of MaxStepY. Use negative for right. [-1.0 to 1.0] */
       float theta; /**< Fraction of MaxStepTheta. Use negative for clockwise [-1.0 to 1.0] */
       float speed; /**< Fraction of MaxStepFrequency [0.0 to 1.0] */
     } WalkMessage_data_t;
+#pragma pack(pop)
 
     WalkMessage_data_t *data;
 

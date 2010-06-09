@@ -44,7 +44,7 @@
     <field type="SkillStatusEnum" name="status" length="8">
       The status of the current skill execution for the appropriate channel.
     </field>
-    <field type="unsigned int" length="8" name="msgid">
+    <field type="uint32" length="8" name="msgid">
     </field>
   </data>
   <message name="ExecSkill">
@@ -53,7 +53,7 @@
   </message>
   <message name="StopExec">
     <comment>Stops the execution of a skill.</comment>
-    <field type="unsigned int" name="channel">Which channel to stop.</field>
+    <field type="uint32" name="channel">Which channel to stop.</field>
   </message>
   <message name="StopAll">
     <comment>Stops the execution of all skills.</comment>

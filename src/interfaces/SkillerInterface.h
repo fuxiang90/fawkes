@@ -53,18 +53,8 @@ class SkillerInterface : public Interface
 #pragma pack(push,4)
   /** Internal data storage, do NOT modify! */
   typedef struct {
-<<<<<<< HEAD
-    unsigned int exclusive_controller; /**< 
-      Instance serial of the exclusive controller of the skiller. If this does not
-      carry your instance serial your exec messages will be ignored. Aquire control with
-      the AquireControlMessage. Make sure you release control before exiting.
-     */
-    unsigned int msgid[8]; /**< 
-     */
-=======
     int64_t timestamp_sec;  /**< Interface Unix timestamp, seconds */
     int64_t timestamp_usec; /**< Interface Unix timestamp, micro-seconds */
->>>>>>> remotes/origin/timn/refboxcomm-spl-gc7
     char skill_string[1024]; /**< 
       Combined string showing as much as possible of the currently
       executed skills string, at most the first 1023 bytes of it.
@@ -82,22 +72,15 @@ class SkillerInterface : public Interface
       error string. Active channels which did not post an error
       message shall be omitted.
      */
-<<<<<<< HEAD
-    SkillStatusEnum status[8]; /**< 
-      The status of the current skill execution for the appropriate channel.
-=======
     uint32_t exclusive_controller; /**< 
       Instance serial of the exclusive controller of the skiller. If this does not
       carry your instance serial your exec messages will be ignored. Aquire control with
       the AquireControlMessage. Make sure you release control before exiting.
      */
-    SkillStatusEnum status; /**< 
-      The status of the current skill execution.
->>>>>>> remotes/origin/timn/refboxcomm-spl-gc7
+    SkillStatusEnum status[8]; /**< 
+      The status of the current skill execution for the appropriate channel.
      */
-    bool continuous; /**< 
-      True if continuous execution is in progress, false if no skill string is executed
-      at all or it is executed one-shot with ExecSkillMessage.
+    uint32_t msgid[8]; /**< 
      */
   } SkillerInterface_data_t;
 #pragma pack(pop)
@@ -148,54 +131,23 @@ class SkillerInterface : public Interface
 #pragma pack(push,4)
     /** Internal data storage, do NOT modify! */
     typedef struct {
-<<<<<<< HEAD
-      unsigned int channel; /**< Which channel to stop. */
-    } StopExecMessage_data_t;
-=======
       int64_t timestamp_sec;  /**< Interface Unix timestamp, seconds */
       int64_t timestamp_usec; /**< Interface Unix timestamp, micro-seconds */
-      char skill_string[1024]; /**< 
-      Currently executed skill string, at least the first 1023 bytes of it.
-      Must be properly null-terminated.
-     */
-    } ExecSkillContinuousMessage_data_t;
+      uint32_t channel; /**< Which channel to stop. */
+    } StopExecMessage_data_t;
 #pragma pack(pop)
-
-    ExecSkillContinuousMessage_data_t *data;
-
-   public:
-    ExecSkillContinuousMessage(const char * ini_skill_string);
-    ExecSkillContinuousMessage();
-    ~ExecSkillContinuousMessage();
->>>>>>> remotes/origin/timn/refboxcomm-spl-gc7
 
     StopExecMessage_data_t *data;
 
-<<<<<<< HEAD
-=======
-  class RestartInterpreterMessage : public Message
-  {
-   private:
-#pragma pack(push,4)
-    /** Internal data storage, do NOT modify! */
-    typedef struct {
-      int64_t timestamp_sec;  /**< Interface Unix timestamp, seconds */
-      int64_t timestamp_usec; /**< Interface Unix timestamp, micro-seconds */
-    } RestartInterpreterMessage_data_t;
-#pragma pack(pop)
-
-    RestartInterpreterMessage_data_t *data;
-
->>>>>>> remotes/origin/timn/refboxcomm-spl-gc7
    public:
-    StopExecMessage(const unsigned int ini_channel);
+    StopExecMessage(const uint32_t ini_channel);
     StopExecMessage();
     ~StopExecMessage();
 
     StopExecMessage(const StopExecMessage *m);
     /* Methods */
-    unsigned int channel() const;
-    void set_channel(const unsigned int new_channel);
+    uint32_t channel() const;
+    void set_channel(const uint32_t new_channel);
     size_t maxlenof_channel() const;
     virtual Message * clone() const;
   };
@@ -208,10 +160,10 @@ class SkillerInterface : public Interface
     typedef struct {
       int64_t timestamp_sec;  /**< Interface Unix timestamp, seconds */
       int64_t timestamp_usec; /**< Interface Unix timestamp, micro-seconds */
-    } StopExecMessage_data_t;
+    } StopAllMessage_data_t;
 #pragma pack(pop)
 
-    StopExecMessage_data_t *data;
+    StopAllMessage_data_t *data;
 
    public:
     StopAllMessage();
@@ -287,10 +239,10 @@ class SkillerInterface : public Interface
   void set_status(unsigned int index, const SkillStatusEnum new_status);
   void set_status(const SkillStatusEnum * new_status);
   size_t maxlenof_status() const;
-  unsigned int * msgid() const;
-  unsigned int msgid(unsigned int index) const;
-  void set_msgid(unsigned int index, const unsigned int new_msgid);
-  void set_msgid(const unsigned int * new_msgid);
+  uint32_t * msgid() const;
+  uint32_t msgid(unsigned int index) const;
+  void set_msgid(unsigned int index, const uint32_t new_msgid);
+  void set_msgid(const uint32_t * new_msgid);
   size_t maxlenof_msgid() const;
   virtual Message * create_message(const char *type) const;
 
