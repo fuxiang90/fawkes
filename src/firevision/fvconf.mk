@@ -24,7 +24,7 @@ CAMS=LEUTRON FIREWIRE FILELOADER NETWORK SHMEM V4L V4L1 V4L2 BUMBLEBEE2 NAO \
      SWISSRANGER PIKE
 CTRLS=EVID100P DPPTU
 
-FVBASEDIR           = $(BASEDIR)/src/firevision
+FVBASEDIR           = $(FAWKES_BASEDIR)/src/firevision
 TOP_FVBASEDIR       = $(TOP_BASEDIR)/src/firevision
 FVCONFDIR           = $(EXEC_CONFDIR)/firevision
 FVLIBDIR            = $(TOP_FVBASEDIR)/libs
@@ -57,6 +57,12 @@ HAVE_LIBPNG = $(if $(shell $(PKGCONFIG) --exists 'libpng'; echo $${?/1/}),1,0)
 ifeq ($(HAVE_LIBPNG),1)
   CFLAGS_LIBPNG  = -DHAVE_LIBPNG $(shell $(PKGCONFIG) --cflags 'libpng')
   LDFLAGS_LIBPNG = $(shell $(PKGCONFIG) --libs 'libpng')
+endif
+
+HAVE_LIBV4L2 = $(if $(shell $(PKGCONFIG) --exists 'libv4l2'; echo $${?/1/}),1,0)
+ifeq ($(HAVE_LIBPNG),1)
+  CFLAGS_LIBV4L2  = -DHAVE_LIBV4L2 $(shell $(PKGCONFIG) --cflags 'libv4l2')
+  LDFLAGS_LIBV4L2 = $(shell $(PKGCONFIG) --libs 'libv4l2')
 endif
 
 ifneq ($(wildcard $(realpath $(SYSROOT)/usr/include/libMesaSR.h)),)
