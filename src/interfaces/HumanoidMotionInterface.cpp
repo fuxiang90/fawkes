@@ -71,7 +71,7 @@ HumanoidMotionInterface::HumanoidMotionInterface() : Interface()
   add_messageinfo("WalkStraightMessage");
   add_messageinfo("WalkSidewaysMessage");
   add_messageinfo("WalkArcMessage");
-  add_messageinfo("StartWalkMessage");
+  add_messageinfo("WalkMessage");
   add_messageinfo("TurnMessage");
   add_messageinfo("KickMessage");
   add_messageinfo("ParkMessage");
@@ -79,7 +79,7 @@ HumanoidMotionInterface::HumanoidMotionInterface() : Interface()
   add_messageinfo("StandupMessage");
   add_messageinfo("YawPitchHeadMessage");
   add_messageinfo("SetStiffnessParamsMessage");
-  unsigned char tmp_hash[] = {0x7a, 0x33, 0x49, 0x60, 0x9e, 0x8a, 0x75, 0xdf, 0x11, 0x1a, 0x3c, 0x6b, 0xc, 0xcf, 0xa1, 0x22};
+  unsigned char tmp_hash[] = {0x9b, 0xea, 0x13, 0x1f, 0xb6, 0xc3, 0x21, 0x6f, 0xa0, 0x7c, 0x7a, 0xfa, 0x25, 0x36, 0x99, 0x89};
   set_hash(tmp_hash);
 }
 
@@ -759,8 +759,8 @@ HumanoidMotionInterface::create_message(const char *type) const
     return new WalkSidewaysMessage();
   } else if ( strncmp("WalkArcMessage", type, __INTERFACE_MESSAGE_TYPE_SIZE) == 0 ) {
     return new WalkArcMessage();
-  } else if ( strncmp("StartWalkMessage", type, __INTERFACE_MESSAGE_TYPE_SIZE) == 0 ) {
-    return new StartWalkMessage();
+  } else if ( strncmp("WalkMessage", type, __INTERFACE_MESSAGE_TYPE_SIZE) == 0 ) {
+    return new WalkMessage();
   } else if ( strncmp("TurnMessage", type, __INTERFACE_MESSAGE_TYPE_SIZE) == 0 ) {
     return new TurnMessage();
   } else if ( strncmp("KickMessage", type, __INTERFACE_MESSAGE_TYPE_SIZE) == 0 ) {
@@ -1944,8 +1944,8 @@ HumanoidMotionInterface::WalkArcMessage::clone() const
 {
   return new HumanoidMotionInterface::WalkArcMessage(this);
 }
-/** @class HumanoidMotionInterface::StartWalkMessage <interfaces/HumanoidMotionInterface.h>
- * StartWalkMessage Fawkes BlackBoard Interface Message.
+/** @class HumanoidMotionInterface::WalkMessage <interfaces/HumanoidMotionInterface.h>
+ * WalkMessage Fawkes BlackBoard Interface Message.
  * 
     
  */
@@ -1957,12 +1957,12 @@ HumanoidMotionInterface::WalkArcMessage::clone() const
  * @param ini_theta initial value for theta
  * @param ini_speed initial value for speed
  */
-HumanoidMotionInterface::StartWalkMessage::StartWalkMessage(const float ini_x, const float ini_y, const float ini_theta, const float ini_speed) : Message("StartWalkMessage")
+HumanoidMotionInterface::WalkMessage::WalkMessage(const float ini_x, const float ini_y, const float ini_theta, const float ini_speed) : Message("WalkMessage")
 {
-  data_size = sizeof(StartWalkMessage_data_t);
+  data_size = sizeof(WalkMessage_data_t);
   data_ptr  = malloc(data_size);
   memset(data_ptr, 0, data_size);
-  data      = (StartWalkMessage_data_t *)data_ptr;
+  data      = (WalkMessage_data_t *)data_ptr;
   data->x = ini_x;
   data->y = ini_y;
   data->theta = ini_theta;
@@ -1973,12 +1973,12 @@ HumanoidMotionInterface::StartWalkMessage::StartWalkMessage(const float ini_x, c
   add_fieldinfo(IFT_FLOAT, "speed", 1, &data->speed);
 }
 /** Constructor */
-HumanoidMotionInterface::StartWalkMessage::StartWalkMessage() : Message("StartWalkMessage")
+HumanoidMotionInterface::WalkMessage::WalkMessage() : Message("WalkMessage")
 {
-  data_size = sizeof(StartWalkMessage_data_t);
+  data_size = sizeof(WalkMessage_data_t);
   data_ptr  = malloc(data_size);
   memset(data_ptr, 0, data_size);
-  data      = (StartWalkMessage_data_t *)data_ptr;
+  data      = (WalkMessage_data_t *)data_ptr;
   add_fieldinfo(IFT_FLOAT, "x", 1, &data->x);
   add_fieldinfo(IFT_FLOAT, "y", 1, &data->y);
   add_fieldinfo(IFT_FLOAT, "theta", 1, &data->theta);
@@ -1986,7 +1986,7 @@ HumanoidMotionInterface::StartWalkMessage::StartWalkMessage() : Message("StartWa
 }
 
 /** Destructor */
-HumanoidMotionInterface::StartWalkMessage::~StartWalkMessage()
+HumanoidMotionInterface::WalkMessage::~WalkMessage()
 {
   free(data_ptr);
 }
@@ -1994,12 +1994,12 @@ HumanoidMotionInterface::StartWalkMessage::~StartWalkMessage()
 /** Copy constructor.
  * @param m message to copy from
  */
-HumanoidMotionInterface::StartWalkMessage::StartWalkMessage(const StartWalkMessage *m) : Message("StartWalkMessage")
+HumanoidMotionInterface::WalkMessage::WalkMessage(const WalkMessage *m) : Message("WalkMessage")
 {
   data_size = m->data_size;
   data_ptr  = malloc(data_size);
   memcpy(data_ptr, m->data_ptr, data_size);
-  data      = (StartWalkMessage_data_t *)data_ptr;
+  data      = (WalkMessage_data_t *)data_ptr;
 }
 
 /* Methods */
@@ -2008,7 +2008,7 @@ HumanoidMotionInterface::StartWalkMessage::StartWalkMessage(const StartWalkMessa
  * @return x value
  */
 float
-HumanoidMotionInterface::StartWalkMessage::x() const
+HumanoidMotionInterface::WalkMessage::x() const
 {
   return data->x;
 }
@@ -2018,7 +2018,7 @@ HumanoidMotionInterface::StartWalkMessage::x() const
  * maximum number of characters for a string
  */
 size_t
-HumanoidMotionInterface::StartWalkMessage::maxlenof_x() const
+HumanoidMotionInterface::WalkMessage::maxlenof_x() const
 {
   return 1;
 }
@@ -2028,7 +2028,7 @@ HumanoidMotionInterface::StartWalkMessage::maxlenof_x() const
  * @param new_x new x value
  */
 void
-HumanoidMotionInterface::StartWalkMessage::set_x(const float new_x)
+HumanoidMotionInterface::WalkMessage::set_x(const float new_x)
 {
   data->x = new_x;
 }
@@ -2038,7 +2038,7 @@ HumanoidMotionInterface::StartWalkMessage::set_x(const float new_x)
  * @return y value
  */
 float
-HumanoidMotionInterface::StartWalkMessage::y() const
+HumanoidMotionInterface::WalkMessage::y() const
 {
   return data->y;
 }
@@ -2048,7 +2048,7 @@ HumanoidMotionInterface::StartWalkMessage::y() const
  * maximum number of characters for a string
  */
 size_t
-HumanoidMotionInterface::StartWalkMessage::maxlenof_y() const
+HumanoidMotionInterface::WalkMessage::maxlenof_y() const
 {
   return 1;
 }
@@ -2058,7 +2058,7 @@ HumanoidMotionInterface::StartWalkMessage::maxlenof_y() const
  * @param new_y new y value
  */
 void
-HumanoidMotionInterface::StartWalkMessage::set_y(const float new_y)
+HumanoidMotionInterface::WalkMessage::set_y(const float new_y)
 {
   data->y = new_y;
 }
@@ -2068,7 +2068,7 @@ HumanoidMotionInterface::StartWalkMessage::set_y(const float new_y)
  * @return theta value
  */
 float
-HumanoidMotionInterface::StartWalkMessage::theta() const
+HumanoidMotionInterface::WalkMessage::theta() const
 {
   return data->theta;
 }
@@ -2078,7 +2078,7 @@ HumanoidMotionInterface::StartWalkMessage::theta() const
  * maximum number of characters for a string
  */
 size_t
-HumanoidMotionInterface::StartWalkMessage::maxlenof_theta() const
+HumanoidMotionInterface::WalkMessage::maxlenof_theta() const
 {
   return 1;
 }
@@ -2088,7 +2088,7 @@ HumanoidMotionInterface::StartWalkMessage::maxlenof_theta() const
  * @param new_theta new theta value
  */
 void
-HumanoidMotionInterface::StartWalkMessage::set_theta(const float new_theta)
+HumanoidMotionInterface::WalkMessage::set_theta(const float new_theta)
 {
   data->theta = new_theta;
 }
@@ -2098,7 +2098,7 @@ HumanoidMotionInterface::StartWalkMessage::set_theta(const float new_theta)
  * @return speed value
  */
 float
-HumanoidMotionInterface::StartWalkMessage::speed() const
+HumanoidMotionInterface::WalkMessage::speed() const
 {
   return data->speed;
 }
@@ -2108,7 +2108,7 @@ HumanoidMotionInterface::StartWalkMessage::speed() const
  * maximum number of characters for a string
  */
 size_t
-HumanoidMotionInterface::StartWalkMessage::maxlenof_speed() const
+HumanoidMotionInterface::WalkMessage::maxlenof_speed() const
 {
   return 1;
 }
@@ -2118,7 +2118,7 @@ HumanoidMotionInterface::StartWalkMessage::maxlenof_speed() const
  * @param new_speed new speed value
  */
 void
-HumanoidMotionInterface::StartWalkMessage::set_speed(const float new_speed)
+HumanoidMotionInterface::WalkMessage::set_speed(const float new_speed)
 {
   data->speed = new_speed;
 }
@@ -2129,9 +2129,9 @@ HumanoidMotionInterface::StartWalkMessage::set_speed(const float new_speed)
  * @return clone of this message
  */
 Message *
-HumanoidMotionInterface::StartWalkMessage::clone() const
+HumanoidMotionInterface::WalkMessage::clone() const
 {
-  return new HumanoidMotionInterface::StartWalkMessage(this);
+  return new HumanoidMotionInterface::WalkMessage(this);
 }
 /** @class HumanoidMotionInterface::TurnMessage <interfaces/HumanoidMotionInterface.h>
  * TurnMessage Fawkes BlackBoard Interface Message.
@@ -3654,7 +3654,7 @@ HumanoidMotionInterface::message_valid(const Message *message) const
   if ( m5 != NULL ) {
     return true;
   }
-  const StartWalkMessage *m6 = dynamic_cast<const StartWalkMessage *>(message);
+  const WalkMessage *m6 = dynamic_cast<const WalkMessage *>(message);
   if ( m6 != NULL ) {
     return true;
   }
