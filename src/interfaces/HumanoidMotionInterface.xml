@@ -24,7 +24,7 @@
       This interface provides acces to basic humanoid motion patterns.
     </comment>
 
-    <field type="bool" name="moving">True if the robot is currently moving.</field>
+    <field type="bool" name="walking">True if the robot is currently moving.</field>
     <field type="LegEnum" name="supporting_leg">Marks the supporting leg</field>
 
     <!-- Walk pattern config -->

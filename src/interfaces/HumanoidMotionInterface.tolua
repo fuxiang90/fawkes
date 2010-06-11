@@ -308,9 +308,9 @@ class HumanoidMotionInterface : public Interface
     int maxlenof_r_elbow_roll() const;
   };
 
-  bool is_moving();
-  void set_moving(const bool new_moving);
-  int maxlenof_moving() const;
+  bool is_walking();
+  void set_walking(const bool new_walking);
+  int maxlenof_walking() const;
   LegEnum supporting_leg();
   void set_supporting_leg(const LegEnum new_supporting_leg);
   int maxlenof_supporting_leg() const;

@@ -66,7 +66,7 @@ class HumanoidMotionInterface : public Interface
   typedef struct {
     int64_t timestamp_sec;  /**< Interface Unix timestamp, seconds */
     int64_t timestamp_usec; /**< Interface Unix timestamp, micro-seconds */
-    bool moving; /**< True if the robot is currently moving. */
+    bool walking; /**< True if the robot is currently moving. */
     LegEnum supporting_leg; /**< Marks the supporting leg */
     float max_step_length; /**< 
       Maximum length of a footstep in m.
@@ -734,9 +734,9 @@ class HumanoidMotionInterface : public Interface
 
  public:
   /* Methods */
-  bool is_moving() const;
-  void set_moving(const bool new_moving);
-  size_t maxlenof_moving() const;
+  bool is_walking() const;
+  void set_walking(const bool new_walking);
+  size_t maxlenof_walking() const;
   LegEnum supporting_leg() const;
   void set_supporting_leg(const LegEnum new_supporting_leg);
   size_t maxlenof_supporting_leg() const;
