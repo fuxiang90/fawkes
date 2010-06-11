@@ -47,7 +47,7 @@ HumanoidMotionInterface::HumanoidMotionInterface() : Interface()
   data_ptr  = malloc(data_size);
   data      = (HumanoidMotionInterface_data_t *)data_ptr;
   memset(data_ptr, 0, data_size);
-  add_fieldinfo(IFT_BOOL, "moving", 1, &data->moving);
+  add_fieldinfo(IFT_BOOL, "walking", 1, &data->walking);
   add_fieldinfo(IFT_ENUM, "supporting_leg", 1, &data->supporting_leg, "LegEnum");
   add_fieldinfo(IFT_FLOAT, "max_step_length", 1, &data->max_step_length);
   add_fieldinfo(IFT_FLOAT, "max_step_height", 1, &data->max_step_height);
@@ -78,7 +78,7 @@ HumanoidMotionInterface::HumanoidMotionInterface() : Interface()
   add_messageinfo("StandupMessage");
   add_messageinfo("YawPitchHeadMessage");
   add_messageinfo("SetStiffnessParamsMessage");
-  unsigned char tmp_hash[] = {0x69, 0x80, 0xac, 0xd5, 0xa4, 0x71, 0xad, 0xe8, 0xd6, 0xdf, 0xbb, 0x13, 0xfb, 0x10, 0x28, 0xf1};
+  unsigned char tmp_hash[] = {0xd1, 0x41, 0xf7, 0xfd, 0x22, 0x83, 0xa5, 0x79, 0x8d, 0xb0, 0xf0, 0xa8, 0xe2, 0xc4, 0x76, 0x14};
   set_hash(tmp_hash);
 }
 
@@ -128,34 +128,34 @@ HumanoidMotionInterface::tostring_StiffnessMotionPatternEnum(StiffnessMotionPatt
   }
 }
 /* Methods */
-/** Get moving value.
+/** Get walking value.
  * True if the robot is currently moving.
- * @return moving value
+ * @return walking value
  */
 bool
-HumanoidMotionInterface::is_moving() const
+HumanoidMotionInterface::is_walking() const
 {
-  return data->moving;
+  return data->walking;
 }
 
-/** Get maximum length of moving value.
- * @return length of moving value, can be length of the array or number of 
+/** Get maximum length of walking value.
+ * @return length of walking value, can be length of the array or number of 
  * maximum number of characters for a string
  */
 size_t
-HumanoidMotionInterface::maxlenof_moving() const
+HumanoidMotionInterface::maxlenof_walking() const
 {
   return 1;
 }
 
-/** Set moving value.
+/** Set walking value.
  * True if the robot is currently moving.
- * @param new_moving new moving value
+ * @param new_walking new walking value
  */
 void
-HumanoidMotionInterface::set_moving(const bool new_moving)
+HumanoidMotionInterface::set_walking(const bool new_walking)
 {
-  data->moving = new_moving;
+  data->walking = new_walking;
 }
 
 /** Get supporting_leg value.
